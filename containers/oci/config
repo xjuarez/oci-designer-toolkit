@@ -1,0 +1,9 @@
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaajg6mxrx53bqpwi4nb7qfx5w2vonxveycqj5dsghmn4pd37fahlwa
+fingerprint=08:a8:0f:cf:21:29:d6:dd:b3:56:80:ba:9d:be:b3:a4
+key_file = /root/.oci/oci_api_key.pem
+tenancy = ocid1.tenancy.oc1..aaaaaaaahuikrqdbwhkalv76vi4hcbteogyvbivid6m7iwsh2nvdt62kfifa
+region = mx-queretaro-1
+#region = us-ashburn-1
+
+
