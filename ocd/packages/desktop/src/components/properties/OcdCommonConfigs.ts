@@ -27,6 +27,15 @@ export namespace OcdCommonConfigs {
                 configs: []
             },
             {
+                id: 'ip_address',
+                properties: {
+                    placeholder: '0.0.0.0',
+                    pattern: "^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$)+|^var\.+$",
+                    title: 'IPv4 Address'
+                },
+                configs: []
+            },
+            {
                 id: 'ipv6cidr_block',
                 properties: {
                     placeholder: '2001:0db8:0123:45::/56',
@@ -47,20 +56,21 @@ export namespace OcdCommonConfigs {
             {
                 id: 'dns_label',
                 properties: {
-                    pattern: "^[\w\._-]+$|^var\.+$|^var\.+$",
-                    title: 'Valid DNS Label'
+                    maxLength: 15,
+                    pattern: '^[a-zA-Z][a-zA-Z0-9]{0,15}$|^var\.+$',
+                    title: 'Only letters and numbers, starting with a letter. 15 characters max, or a variable starting "var."'
                 },
                 configs: []
             },
             {
                 id: 'hostname_label',
                 properties: {
-                    maxlength: '64',
-                    pattern: '^[a-zA-Z][a-zA-Z0-9]{0,64}$',
+                    maxLength: 64,
+                    pattern: '^[a-zA-Z][a-zA-Z0-9]{0,64}$|^var\.+$',
                     title: 'Hostname can only be letters and numbers, starting with a letter. 64 characters max.'
                 },
                 configs: []
-             }
+            }
         ]
     }
 }

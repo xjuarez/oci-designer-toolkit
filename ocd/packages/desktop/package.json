@@ -1,7 +1,7 @@
 {
   "name": "@ocd/desktop",
   "productName": "ocd",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "description": "OKIT Open Cloud Designer Desktop",
   "title": "OKIT Open Cloud Designer Desktop",
   "author": {
@@ -10,12 +10,17 @@
     "url": "https://github.com/oracle/oci-designer-toolkit"
   },
   "bugs": "https://github.com/oracle/oci-designer-toolkit/issues",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/oracle/oci-designer-toolkit.git",
+    "directory": "ocd/packages/desktop"
+  },
   "keywords": [
     "ocd",
     "okit"
   ],
   "license": "UPL-1.0",
-  "main": "src/main.js",
+  "main": "public/main.js",
   "homepage": "./",
   "private": true,
   "config": {
@@ -61,6 +66,56 @@
       ]
     }
   },
+  "build": {
+    "appId": "com.oracle.okit-ocd",
+    "artifactName": "${productName}-${version}.${ext}",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "output": "../../dist/${os}",
+      "buildResources": "assets"
+    },
+    "fileAssociations": [
+      {
+        "ext": "okit",
+        "name": "OCD Design",
+        "role": "Editor"
+      },
+      {
+        "ext": "ocd",
+        "name": "OCD Design",
+        "role": "Editor"
+      }
+    ],
+    "mac": {
+      "icon": "build/assets/icon.icns",
+      "category": "public.app-category.developer-tools"
+    },
+    "dmg": {
+      "icon": "build/assets/icon.icns",
+      "background": "build/assets/background.png",
+      "window": {
+        "width": 585,
+        "height": 355
+      }
+    },
+    "win": {
+      "icon": "build/assets/icon.ico"
+    },
+    "nsis": {
+      "perMachine": true
+    },
+    "linux": {
+      "icon": "build/assets/icon.png",
+      "executableName": "${productName}-${version}.${ext}",
+      "target": [
+        "AppImage",
+        "snap"
+      ]
+    }
+  },
   "dependencies": {
     "@ocd/core": "^1.0.0",
     "@ocd/export": "^1.0.0",
@@ -79,8 +134,10 @@
     "react": "^18.2.0",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.0",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.0",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
@@ -95,18 +152,30 @@
     "eject": "react-scripts eject"
   },
   "scripts": {
+    "start-react-scripts": "react-scripts start",
+    "build-react-scripts": "react-scripts build",
+    "test-react-scripts": "react-scripts test",
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "build-old": "react-scripts build",
     "electron": "WEB_URL=http://localhost:3000 electron .",
     "electron-forge": "WEB_URL=http://localhost:3000 electron-forge start",
     "electron-forge-dev": "npm run build && electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "build-all": "npm run build && npm run make",
-    "desktop": "npm run electron-forge-dev",
+    "electron-forge-package": "electron-forge package",
+    "electron-forge-make": "electron-forge make",
+    "electron-forge-publish": "electron-forge publish",
+    "electron-forge-build": "npm run build-react-scripts && npm run make",
+    "electron-start": "electron .",
+    "preelectron-linux-pack": "npm run build",
+    "electron-linux-pack": "electron-builder build --linux -c.extraMetadata.main=build/main.js",
+    "preelectron-macos-pack": "npm run build",
+    "electron-macos-pack": "electron-builder build --macos -c.extraMetadata.main=build/main.js",
+    "preelectron-win-pack": "npm run build",
+    "electron-win-pack": "electron-builder build --win -c.extraMetadata.main=build/main.js",
+    "preelectron-release-pack": "npm run build",
+    "electron-release-pack": "electron-builder build --x64 --macos --win --linux -c.extraMetadata.main=build/main.js",
+    "electron-pack": "electron-builder build -c.extraMetadata.main=build/main.js",
+    "build": "npm run build-react-scripts && npm run electron-pack",
+    "desktop": "npm run build-react-scripts && electron-forge start",
     "web": "npm run start"
   },
   "eslintConfig": {
@@ -136,6 +205,8 @@
     "@electron-forge/maker-zip": "^6.3.0",
     "@electron-forge/plugin-auto-unpack-natives": "^6.3.0",
     "@types/uuid": "^9.0.2",
-    "electron": "^25.5.0"
+    "electron": "26.2.4",
+    "electron-builder": "^24.6.4",
+    "typescript": "^5.2.2"
   }
 }

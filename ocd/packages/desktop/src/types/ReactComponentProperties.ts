@@ -6,9 +6,10 @@
 import React, { MouseEventHandler } from 'react'
 import { OcdConsoleConfig } from '../components/OcdConsoleConfiguration'
 import OcdDocument from '../components/OcdDocument'
-import { OcdViewConnector, OcdViewCoords } from '@ocd/model'
+import { OcdResource, OcdResources, OcdViewConnector, OcdViewCoords, OciResource } from '@ocd/model'
 import { DragData } from './DragData'
 import { OcdContextMenu } from '../components/OcdCanvas'
+import { OcdVariable } from '@ocd/model/src/OcdDesign'
 
 export interface CanvasProps {
     dragData: DragData
@@ -32,6 +33,7 @@ export interface ResourceForeignObjectProps {
     setOcdDocument: React.Dispatch<any>
     resource: OcdViewCoords
     hidden: boolean
+    ghost?: boolean
 }
 
 export interface ResourceSvgGhostProps {
@@ -49,6 +51,7 @@ export interface ResourceSvgProps {
     setContextMenu: React.Dispatch<any>
     svgDragDropEvents: OcdMouseEvents
     resource: OcdViewCoords
+    ghost?: boolean
 }
 
 export interface ResourceSvgContextMenuProps {
@@ -76,3 +79,47 @@ export interface OcdMouseEvents extends Record<string, MouseEventHandler<SVGGEle
 // export interface OcdMouseEvents {
 //     [key: string]: Function   
 // }
+
+export interface OciTabularResourceProps {
+    ocdDocument: OcdDocument
+    ociResources: OcdResources
+    selected: string
+}
+
+export interface OciTabularContentsProps extends OciTabularResourceProps {
+    columnTitles: string[]
+    resourceElements: string[]
+}
+
+export interface OciTabularHeaderProps {
+    columnTitles: string[]
+    ociResources: OcdResources
+    resourceElements: string[]
+    selected: string
+    sortColumn: string
+    sortAscending: boolean
+    onSortClick: React.Dispatch<any>
+}
+
+export interface OciTabularRowProps {
+    ocdDocument: OcdDocument
+    ociResources: OcdResources
+    index: number
+    resource: OcdResource
+    resourceElements: string[]
+}
+
+export interface OcdVariableRowPropsNew {
+    variable: OcdVariable
+    onNameChange: React.Dispatch<any>
+    onDefaultChange: React.Dispatch<any>
+    onDescriptionChange: React.Dispatch<any>
+    onDeleteClick: React.Dispatch<any>
+}
+export interface OcdVariableRowProps {
+    ocdDocument: OcdDocument
+    setOcdDocument: React.Dispatch<any>
+    variable: OcdVariable
+    // row: number
+    onDeleteClick: React.Dispatch<any>
+}

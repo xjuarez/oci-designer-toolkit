@@ -211,9 +211,9 @@ function loaded(evt) {
     console.info(fileJson);
     if (fileJson.hasOwnProperty('compartments')) {
         console.info('>> Single Region File')
-        // okitJsonModel = new OkitJson(fileString);
-        newModel(fileString)
-        newCompartmentView();
+        // newModel(fileString)
+        // newCompartmentView();
+        loadModelFromJson(fileString)
     } else {
         console.info('>> Multi Region File.')
         showRegionTabBar();
@@ -236,6 +236,19 @@ function loaded(evt) {
 }
 function errorHandler(evt) {
     console.info('Error: ' + evt.target.error.name);
+}
+/*
+** Load Model From JSON
+*/
+function loadModelFromJson(model) {
+    // console.debug('loadModelFromJson:', model)
+    if (model) {
+        newModel(model)
+        newCompartmentView();
+        displayOkitJson();
+        displayCompartmentView();
+        displayTreeView();
+    }
 }
 /*
 ** Save Model as Json
@@ -1389,6 +1402,43 @@ function loadPCACompartments() {
             console.error('Error  : ' + error);
         }).always(() => {})
     }
+}
+/*
+** Query C3
+*/
+function handleQueryC3(e) {
+    hideNavMenu();
+    $("#toolbar_view_select").val('designer');
+    handleSwitchToCompartmentView();
+    // Display Dialog
+    displayQueryDialog('Query C3', 'Query', () => {queryPCA(showQueryPCAResults)}, loadPCACompartments, false);
+    // Set Query Config Profile
+    okitSettings.home_region_key = '';
+    okitSettings.home_region = '';
+    ociRegions = [];
+    // Load Previous Profile
+    $(jqId('config_profile')).val($(`#console_header_config_select`).val());
+    // Load Compartment Select
+    loadPCACompartments();
+    // Load Region Select
+    loadRegions(selectQueryLastUsedRegion);
+}
+function handleImportFromC3(e) {
+    hideNavMenu();
+    $("#toolbar_view_select").val('designer');
+    handleSwitchToCompartmentView();
+    // Display Dialog
+    displayQueryDialog('Import From C3', 'Introspect', () => {queryPCA(showImportResults)}, loadPCACompartments, false);
+    // Set Query Config Profile
+    okitSettings.home_region_key = '';
+    okitSettings.home_region = '';
+    ociRegions = [];
+    // Load Previous Profile
+    $(jqId('config_profile')).val($(`#console_header_config_select`).val());
+    // Load Compartment Select
+    loadPCACompartments();
+    // Load Region Select
+    loadRegions(selectQueryLastUsedRegion);
 }
 /*
 ** Query PCA-X9

@@ -4,12 +4,14 @@
 */
 
 import { v4 as uuidv4 } from 'uuid'
-import OcdDocument, { OcdDragResource, OcdSelectedResource } from './OcdDocument'
-import OcdResourceSvg, { OcdConnector, OcdDragResourceGhostSvg, OcdSvgContextMenu } from './OcdResourceSvg'
+import { OcdAddResourceResponse, OcdDocument, OcdDragResource, OcdSelectedResource } from './OcdDocument'
+import { OcdResourceSvg, OcdConnector, OcdDragResourceGhostSvg, OcdSvgContextMenu } from './OcdResourceSvg'
 import { OcdResource, OcdViewConnector, OcdViewCoords, OcdViewLayer, OcdViewPage } from '@ocd/model'
 import { CanvasProps, OcdMouseEvents } from '../types/ReactComponentProperties'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { newDragData } from '../types/DragData'
+import { ActiveFileContext } from '../pages/OcdConsole'
+import { OcdUtils } from '@ocd/core'
 
 export interface OcdContextMenu {
     show: boolean
@@ -23,14 +25,25 @@ export interface Point {
     y: number
 }
 
+export const OcdCanvasGrid = (): JSX.Element => {
+    return (
+        <rect width="100%" height="100%" fill="url(#grid)"></rect>
+    )
+}
+
 export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument, setOcdDocument }: CanvasProps): JSX.Element => {
-    console.info('OcdCanvas: OCD Document:', ocdDocument)
+    // console.info('OcdCanvas: OCD Document:', ocdDocument)
+    console.info('OcdCanvas: OCD Design:', ocdDocument.design)
+    // @ts-ignore
+    const {activeFile, setActiveFile} = useContext(ActiveFileContext)
     const uuid = () => `gid-${uuidv4()}`
     const page: OcdViewPage = ocdDocument.getActivePage()
-    const layers = page.layers.filter((l: OcdViewLayer) => l.visible).map((l: OcdViewLayer) => l.id)
-    const visibleResourceIds = ocdDocument.getResources().filter((r: any) => layers.includes(r.compartmentId)).map((r: any) => r.id)
+    const allCompartmentIds = ocdDocument.getOciResourceList('comparment').map((r) => r.id)
+    const visibleLayers = page.layers.filter((l: OcdViewLayer) => l.visible).map((l: OcdViewLayer) => l.id)
+    // const visibleResourceIds = ocdDocument.getResources().filter((r: OcdResource) => visibleLayers.includes(r.compartmentId) || (!allCompartmentIds.includes(r.compartmentId) && r.resourceType !== 'Compartment')).map((r: any) => r.id)
+    const visibleResourceIds = ocdDocument.getResources().filter((r: any) => visibleLayers.includes(r.compartmentId)).map((r: any) => r.id)
     // const visibleResourceIds = ocdDocument.getResources().map((r: any) => r.id)
-    console.debug('OcdCanvas: Visible Resource Ids', visibleResourceIds)
+    // console.debug('OcdCanvas: Visible Resource Ids', visibleResourceIds)
     const [dragResource, setDragResource] = useState(ocdDocument.newDragResource(false))
     const [contextMenu, setContextMenu] = useState<OcdContextMenu>({show: false, x: 0, y: 0})
     const [dragging, setDragging] = useState(false)
@@ -93,7 +106,10 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
             const { x, y } =  point.matrixTransform(svg.getScreenCTM().inverse())
             console.info('x:', x, 'y:', y)
             // Add to OCD Model/View
-            const modelResource: OcdResource = dragData.existingResource ? dragData.resource : ocdDocument.addResource(dragData.dragObject, compartmentId)
+            // const modelResource: OcdResource = dragData.existingResource ? dragData.resource : ocdDocument.addResource(dragData.dragObject, compartmentId)
+            const response: OcdAddResourceResponse = dragData.existingResource ? {modelResource: dragData.resource, additionalResources: []} : ocdDocument.addResource(dragData.dragObject, compartmentId)
+            const modelResource = response.modelResource
+            const additionalResources = response.additionalResources
             if (modelResource) {
                 ocdDocument.setResourceParent(modelResource.id, pocid)
                 const coords: OcdViewCoords = ocdDocument.newCoords()
@@ -104,7 +120,7 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
                 coords.x = x / transformMatrix[0]
                 coords.y = y / transformMatrix[3]
                 coords.w = container ? 300 : 32
-                coords.h = container ? 200 : 32
+                coords.h = container ? 300 : 32
                 coords.title = dragData.dragObject.title
                 coords.class = dragData.dragObject.class
                 coords.container = container
@@ -116,12 +132,35 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
                     coordsId: coords.id,
                     class: dragData.dragObject.class
                 }
+                let additionalY = 60 + y
+                let additionalX = 15 + x
+                additionalResources.forEach((r: OcdResource) => {
+                    console.debug('OcdCanvas: Additional Resource', r)
+                    const modelResource = r
+                    if (modelResource) {
+                        const childCoords: OcdViewCoords = ocdDocument.newCoords()
+                        childCoords.id = uuid()
+                        childCoords.pgid = coords.id
+                        childCoords.ocid = modelResource.id
+                        childCoords.pocid = coords.ocid
+                        childCoords.x = additionalX / transformMatrix[0]
+                        childCoords.y = additionalY / transformMatrix[3]
+                        childCoords.w = 32
+                        childCoords.h = 32
+                        childCoords.title = modelResource.resourceTypeName
+                        childCoords.class = OcdUtils.toCssClassName(modelResource.provider, modelResource.resourceTypeName.split(' ').join('_'))
+                        childCoords.container = false
+                        ocdDocument.addCoords(childCoords, page.id, coords.id)
+                        additionalY += 60 
+                    }
+                })
             }
             // Clear Drag Data Information
             setDragData(newDragData())
             // Redraw
-            console.info('OcdCanvas: Design:', ocdDocument)
+            console.info('OcdCanvas: Design:', ocdDocument.design)
             setOcdDocument(OcdDocument.clone(ocdDocument))
+            if (!activeFile.modified) setActiveFile({name: activeFile.name, modified: true})
         }
         return false
     }
@@ -147,7 +186,7 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
         e.stopPropagation()
         e.preventDefault()
         if (dragging) {
-            console.info('OcdCanvas: SVG Drag')
+            console.debug('OcdCanvas: SVG Drag')
             const ghostXY = ocdDocument.getRelativeXY(ocdDocument.dragResource.resource)
             // Set state for the change in coordinates.
             setCoordinates({
@@ -159,6 +198,7 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
               y: ghostXY.y + coordinates.y,
             })
         } else if (panning) {
+            console.debug('OcdCanvas: SVG Panning')
             setCoordinates({
                 x: e.clientX - origin.x,
                 y: e.clientY - origin.y,
@@ -173,6 +213,7 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
         e.stopPropagation()
         if (dragging) {
             console.info('OcdCanvas: SVG Drag End', ocdDocument.dragResource)
+            const hasMoved = coordinates.x !== 0 || coordinates.y !== 0
             setDragging(false)
             // Test if container dropped on self
             if (ocdDocument.dragResource.parent && ocdDocument.dragResource.resource.id === ocdDocument.dragResource.parent.id) {
@@ -200,6 +241,7 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
             ocdDocument.dragResource = ocdDocument.newDragResource()
             // Redraw
             setOcdDocument(OcdDocument.clone(ocdDocument))
+            if (!activeFile.modified && hasMoved) setActiveFile({name: activeFile.name, modified: true})
         } else if (panning) {
             setPanning(false)
             setCoordinates({ x: 0, y: 0 })
@@ -208,17 +250,19 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
         }
     }
     const onWheel = (e: React.WheelEvent<SVGElement>) => {
-        const scrollSensitivity = 0.01
-        const scale = e.deltaY
-        const newMatrix = transformMatrix.slice()
-        newMatrix[0] += (scale * scrollSensitivity)
-        newMatrix[3] += (scale * scrollSensitivity)
-        // console.debug('OcdCanvas: Mew Matrix', newMatrix)
-        // Set limits
-        // if (newMatrix[0] >= 0.3 && newMatrix[0] <= 3) setTransformMatrix(newMatrix)
-        if (newMatrix[0] >= 0.3 && newMatrix[0] <= 3) {
-            page.transform = newMatrix
-            setOcdDocument(OcdDocument.clone(ocdDocument))
+        if (ocdConsoleConfig.config.zoomOnWheel) {
+            const scrollSensitivity = 0.01
+            const scale = e.deltaY
+            const newMatrix = transformMatrix.slice()
+            newMatrix[0] += (scale * scrollSensitivity)
+            newMatrix[3] += (scale * scrollSensitivity)
+            // console.debug('OcdCanvas: Mew Matrix', newMatrix)
+            // Set limits
+            // if (newMatrix[0] >= 0.3 && newMatrix[0] <= 3) setTransformMatrix(newMatrix)
+            if (newMatrix[0] >= 0.3 && newMatrix[0] <= 5) {
+                page.transform = newMatrix
+                setOcdDocument(OcdDocument.clone(ocdDocument))
+            }
         }
     }
 
@@ -299,6 +343,7 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
             setDragResource(ocdDocument.newDragResource())
             // Redraw
             setOcdDocument(OcdDocument.clone(ocdDocument))
+            if (!activeFile.modified) setActiveFile({name: activeFile.name, modified: true})
         }
     }
     const svgDragDropEvents: OcdMouseEvents = {
@@ -306,6 +351,26 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
         'onSVGDrag': svgDrag,
         'onSVGDragEnd': svgDrop,
     }
+
+    const calculateSvgWidth = (coords: OcdViewCoords[]): number => {
+        const simpleWidth = 40
+        const detailedWidth = 170
+        let width = 0
+        coords.forEach((c => width = Math.max(width, (c.x + (c.container && (!c.detailsStyle || c.detailsStyle === 'default') ? c.w : (!c.detailsStyle || c.detailsStyle === 'detailed') ? detailedWidth : simpleWidth)))))
+        width += 100
+        return width
+    }
+
+    const calculateSvgHeight = (coords: OcdViewCoords[]): number => {
+        const simpleHeight = 40
+        let height = 0
+        coords.forEach((c => height = Math.max(height, (c.y + (c.container && (!c.detailsStyle || c.detailsStyle === 'default') ? c.h : simpleHeight)))))
+        height += 100
+        return height
+    }
+
+    const svgWidth = calculateSvgWidth(page.coords)
+    const svgHeight = calculateSvgHeight(page.coords)
 
     // @ts-ignore 
     const allPageCoords = ocdDocument.getAllPageCoords(page)
@@ -333,8 +398,8 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
             >
             <svg className='ocd-designer-canvas-svg'
                 id='canvas_root_svg' 
-                width='100%' 
-                height='100%' 
+                width={`max(${svgWidth}px, 100%)`} 
+                height={`max(${svgHeight}px, 100%)`}
                 data-gid='' 
                 data-ocid=''
                 onMouseDown={onSVGDragStart}
@@ -344,6 +409,11 @@ export const OcdCanvas = ({ dragData, setDragData, ocdConsoleConfig, ocdDocument
                 onWheel={onWheel}
                 onClick={onClick}
                     >
+                    <defs>
+                        <pattern id="small-grid" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M 8 0 L 0 0 0 8" fill="none" stroke="gray" strokeWidth="0.5"></path></pattern>
+                        <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="url(#small-grid)"></rect><path d="M 80 0 L 0 0 0 80" fill="none" stroke="darkgray" strokeWidth="1"></path></pattern>
+                    </defs>
+                    {page.grid && <OcdCanvasGrid/>}
                     <g id='matrix-group' transform={`matrix(${transformMatrix.join(' ')})`}>
                         <g>
                             {visibleCoords.map((r: OcdViewCoords) => {
