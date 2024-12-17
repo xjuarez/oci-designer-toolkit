@@ -1,12 +1,12 @@
 /*
-** Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 console.debug('Loaded Console Javascript');
 
 
-const okitVersion = '0.61.0';
-const okitReleaseDate = '30th June 2024';
+const okitVersion = '0.66.1';
+const okitReleaseDate = '30th Novermber 2024';
 // const okitReleaseDate = 'Nightly';
 
 // Validation

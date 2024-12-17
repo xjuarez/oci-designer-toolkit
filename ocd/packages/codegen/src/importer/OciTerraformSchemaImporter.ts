@@ -1,19 +1,15 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
-import { OcdSchemaImporter } from './OcdSchemaImporter'
-import { ignoreElements } from './data/OciIgnoreElements'
-import { resourceMap, dataMap, resourceAttributes } from './data/OciResourceMap'
-import { elementOverrides } from './data/OciElementOverrides' 
-import { conditionalElements } from './data/OciConditionalElements'
-// import { attributeMap } from './data/OcdAttributeMap'
-import { TerrafomSchemaEntry, TerraformSchema } from '../types/TerraformSchema'
-import{ OcdSchemaEntry } from '../types/OcdSchema'
-// import { OcdResourceMap } from '../types/OcdImporterData'
-import { OcdUtils } from '@ocd/core'
-import { OcdTerraformSchemaImporter } from './OcdTerraformSchemaImporter'
+import { ignoreElements } from './data/OciIgnoreElements.js'
+import { resourceMap, dataMap, resourceAttributes } from './data/OciResourceMap.js'
+import { elementOverrides } from './data/OciElementOverrides.js' 
+import { conditionalElements } from './data/OciConditionalElements.js'
+import { TerrafomSchemaEntry, TerraformSchema } from '../types/TerraformSchema.js'
+import{ OcdSchemaEntry } from '../types/OcdSchema.js'
+import { OcdTerraformSchemaImporter } from './OcdTerraformSchemaImporter.js'
 
 export class OciTerraformSchemaImporter extends OcdTerraformSchemaImporter {
     constructor() {
@@ -59,7 +55,7 @@ export class OciTerraformSchemaImporter extends OcdTerraformSchemaImporter {
 
     genId = (k: string, hierarchy: string[]=[]) => [...hierarchy, k].join('.')
 
-    getAttributes(key: string, block: TerrafomSchemaEntry, hierarchy=[]) {
+    getAttributesOrig(key: string, block: TerrafomSchemaEntry, hierarchy=[]) {
         const ignore_block_types = ['timeouts']
         const ignore_attributes = ignoreElements[key] ? [...ignoreElements.common, ...ignoreElements[key]] : ignoreElements.common
         const type_overrides = elementOverrides.types[key] ? {...elementOverrides.types.common, ...elementOverrides.types[key]} : elementOverrides.types.common
@@ -156,4 +152,4 @@ export class OciTerraformSchemaImporter extends OcdTerraformSchemaImporter {
 }
 
 export default OciTerraformSchemaImporter
-module.exports = { OciTerraformSchemaImporter }
+// module.exports = { OciTerraformSchemaImporter }

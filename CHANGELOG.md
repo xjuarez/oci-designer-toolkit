@@ -1,6 +1,103 @@
 # Release Notes
 
 
+## Version 0.66.1
+**Release Date**: 13th December 2024
+### Features
+### Bug Fixes
+1. Update main README to de-emphasise Docker (Issue: #733)
+
+
+## Version 0.66.0
+**Release Date**: 30th November 2024
+### Features
+1. OKIT-Ocd: Convert @ocd/core to ES6 Module (#OKIT-307)
+1. OKIT-Ocd: Convert @ocd/model to ES6 Module (#OKIT-308)
+1. OKIT-Ocd: Convert @ocd/query to ES6 Module (#OKIT-309)
+1. OKIT-Ocd: Convert @ocd/export to ES6 Module (#OKIT-310)
+1. OKIT-Ocd: Convert @ocd/import to ES6 Module (#OKIT-311)
+1. OKIT-Ocd: Convert @ocd/codegen to ES6 Module (#OKIT-312)
+1. OKIT-Ocd: Convert @ocd/codegen-cli to ES6 Module (#OKIT-313)
+1. OKIT-Ocd: Convert @ocd/cli to ES6 Module (#OKIT-314)
+1. OKIT-Ocd: Convert @ocd/desktop to ES6 Module (#OKIT-315)
+1. OKIT-Ocd: Switch build process from Create React App / Webpack to Vite (#OKIT-305)
+1. OKIT-Ocd: Switch to Electron Forge for building.
+### Bug Fixes
+
+
+## Version 0.65.0
+**Release Date**: 30th October 2024
+### Features
+1. OKIT-Web: Create PCA specific OKIT Cache classes for use when accessing the pca link.
+2. OKIT-Ocd: Update initial Azure resources to match released terraform providers. (#OKIT-316)
+3. OKIT-Ocd: Update initial Google resources to match released terraform providers . (#OKIT-317)
+### Bug Fixes
+1. OKIT-Web: Resolve issue with queried node_pool where the availability dodamin was still the full name. (#723)
+
+## Version 0.64.0
+**Release Date**: 30th September 2024
+### Features
+1. Parse AzuraRM Terraform schema and generate OCD Resource Schema entries. (#OKIT-272)
+3. Write AzureRM Model Generator. (#OKIT-273)
+4. Write AzureRM Properties Generator. (#OKIT-274)
+5. Write AzureRM Terraform Generator. (#OKIT-275)
+6. Write AzureRM Markdown Generator. (#OKIT-276)
+7. Write AzureRM Validator Generator. (#OKIT-277)
+8. Write AzureRM Tabular Generator. (#OKIT-278)
+9. Parse Google Terraform schema and generate OCD Resource Schema entries. (#OKIT-284)
+10. Write Google Model Generator. (#OKIT-285)
+11. Write Google Properties Generator. (#OKIT-286)
+12. Write Google Terraform Generator. (#OKIT-287)
+13. Write Google Markdown Generator. (#OKIT-288)
+14. Write Google Validator Generator. (#OKIT-289)
+15. Write Google Tabular Generator. (#OKIT-290)
+16. Create Library View which will allow users to select pre-defined Reference Architectures. (#OKIT-304)
+### Bug Fixes
+1. OKIT-Web: Resolve issue where save dialog did not display existing content (#717)
+2. OKIT-Web: Fix for underlying AuthLib api change.
+
+
+## Version 0.63.0
+**Release Date**: 31st August 2024
+### Features
+1. OKIT-Ocd: Build OKIT-Web style auto arranger. (#OKIT-299)
+2. OKIT-Ocd: Generated example connection.tfvars file during OpenTofu export. (#OKIT-297)
+3. OKIT-Ocd: Add Palette for Compute Cloud@Customer. (#OKIT-298) 
+4. OKIT-Ocd: Add Palette for PCA-X9. (#OKIT-298)
+5. OKIT-Ocd: Allow quering of cache data from specified Config Profiles and then switch. (#OKIT-296)
+
+### Bug Fixes
+1. OKIT-Web: Resolve Code Scanning Issues #688 - #712
+2. OKIT-Web: Convert Queried Network Load Balancer Listeners set to list.
+3. OKIT-Web: Revert DRG Attachment fix for PCA DRGv1+ feature
+
+## Version 0.62.2
+**Release Date**: 22nd August 2024
+### Features
+### Bug Fixes
+1. OKIT-Web: Resolve issue where region subscription call was hanging on PCA.
+
+
+## Version 0.62.1
+**Release Date**: 20th August 2024
+### Features
+### Bug Fixes
+1. OKIT-Web: Resolve issue caused by PCA patching where the wrong region information is returned.
+
+
+## Version 0.62.0
+**Release Date**: 31st July 2024
+### Features
+1. OKIT-Ocd: Add the ability to create common Defined Tags that will be used across all reasorces created by OCD. (#OKIT-269)
+2. OKIT-Ocd: Add single button collapse and expand for Palette.
+3. OKIT-Ocd: Add single button collapse and expand for Properties.
+4. OKIT-Ocd: Add Freeform and Defined Tags to each resource. (#OKIT-270)
+5. OKIT-Ocd: Extend Tabular view to allow for column display selection where additional columns are specified. (#OKIT-295)
+### Bug Fixes
+1. OKIT-Web: Resolve Code Scanning Warnings: Issues #652-#672
+2. OKIT-Ocd: resolve Code scanning Warnings: Issues #673-#680
+
+
 ## Version 0.61.0
 **Release Date**: 30th June 2024
 ### Features

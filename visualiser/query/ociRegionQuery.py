@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -40,11 +40,6 @@ class OCIRegionQuery(OCIConnection):
         logger.info('>>>>> Querying Regions' + str(self.config))
         if self.instance_principal:
             self.config['tenancy'] = self.getTenancy()
-        # if "cert-bundle" in self.config:
-        #     cert_bundle = self.config["cert-bundle"]
-        # else:
-        #     cert_bundle = None
-        logger.info(f'cert_bundle={self.cert_bundle}')
 
         discovery_client = OciResourceDiscoveryClient(self.config, signer=self.signer, cert_bundle=self.cert_bundle, include_resource_types=self.SUPPORTED_RESOURCES)
         regions = self.response_to_json(discovery_client.regions)
@@ -60,6 +55,8 @@ class OCIRegionQuery(OCIConnection):
             else:
                 name_parts = region['name'].split('-')
                 region['display_name'] = '{0!s:s} {1!s:s}'.format(name_parts[0].upper(), name_parts[1].capitalize())
+        if len([r for r in regions if r['id'] == self.config['region']]) > 0:
+            logger.info(f'>>>>> Queried Regions Found Config Region {self.config}')
         return regions
 
     def response_to_json(self, data):

@@ -1,5 +1,5 @@
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -32,6 +32,7 @@ from flask import request
 from flask import send_from_directory
 from flask import session
 from flask import url_for
+from markupsafe import escape
 
 import json
 from common.okitCommon import jsonToFormattedString
@@ -406,7 +407,6 @@ def designer(target):
 @bp.route('/panel/templates', methods=(['GET']))
 def templates_panel():
     target = request.args.get('target', default='')
-    logger.info(f'Template target {target}')
     # ref_arch_root = os.path.join(bp.static_folder, 'templates', 'reference_architecture')
     ref_arch_root = os.path.join(current_app.instance_path, 'templates', 'reference_architecture', target)
     ref_arch_templates = dir_to_json(ref_arch_root, current_app.instance_path, 'children', 'templates')
@@ -484,7 +484,7 @@ def templates():
     if request.method == 'GET':
         templates_root = os.path.join(current_app.instance_path, request.args['root_dir'].strip('/'))
         templates = dir_to_json(templates_root, current_app.instance_path)
-        logger.debug(f'Templates : {jsonToFormattedString(templates)}')
+        logger.info(f'Templates : {jsonToFormattedString(templates)}')
         return templates
 
 
@@ -587,8 +587,6 @@ def valueproposition(sheet):
 
 @bp.route('/generate/<string:language>/<string:destination>', methods=(['GET', 'POST']))
 def generate(language, destination):
-    logger.info('Language : {0:s} - {1:s}'.format(str(language), str(request.method)))
-    logger.info('Destination : {0:s} - {1:s}'.format(str(destination), str(request.method)))
     if request.method == 'POST':
         logger.debug('JSON     : {0:s}'.format(str(request.json)))
         use_vars = request.json.get("use_variables", True)
@@ -634,20 +632,17 @@ def generate(language, destination):
                 shutil.rmtree(destination_dir)
                 filename = os.path.split(zipname)
                 logger.info('Split Zipfile : {0:s}'.format(str(filename)))
-                return zipname
+                return escape(zipname)
         except Exception as e:
             logger.exception(e)
-            return str(e), 500
+            return 'Failed to generate file', 500
     else:
-        logger.info(f'Returning /tmp/okit-{language}.zip')
         return send_from_directory('/tmp', "okit-{0:s}.zip".format(str(language)), mimetype='application/zip', as_attachment=True)
 
 
 # TODO: Delete
 @bp.route('/saveas/<string:savetype>', methods=(['POST']))
 def saveas(savetype):
-    logger.info('Save Type : {0:s} - {1:s}'.format(str(savetype), str(request.method)))
-    logger.debug('JSON     : {0:s}'.format(str(request.json)))
     if request.method == 'POST':
         try:
             filename = '{0!s:s}.json'.format(request.json['title'].replace(' ', '_').lower())
@@ -663,7 +658,7 @@ def saveas(savetype):
                 logger.info('Template File Name : {0!s:s}'.format(filename))
                 logger.info('>>>>>> Path to file {0!s:s}'.format(fullpath))
                 writeJsonFile(request.json, fullpath)
-                return filename
+                return escape(filename)
             elif savetype == 'git':
                 git_url, git_branch = request.json['git_repository'].split('*')
                 git_commit_msg = request.json['git_repository_commitmsg']
@@ -694,10 +689,10 @@ def saveas(savetype):
                 repo.index.add(fullpath)
                 repo.index.commit("commit changes from okit:" + git_commit_msg)
                 repo.remotes.origin.push(git_branch)
-                return filename
+                return escape(filename)
         except Exception as e:
             logger.exception(e)
-            return str(e), 500
+            return 'Failed to Save file', 500
 
 
 @bp.route('/dropdown/data/<string:profile>/<string:region>', methods=(['GET', 'POST']))
@@ -711,17 +706,14 @@ def dropdownData(profile, region):
     if request.method == 'GET':
         if os.path.exists(profile_dropdown_file):
             dropdown_file = profile_dropdown_file
-            logger.info(f'Loading Dropdown file {dropdown_file}')
             dropdown_json = readJsonFile(dropdown_file)
         else:
             dropdown_file = shipped_dropdown_file
-            logger.info(f'Loading Dropdown file {dropdown_file}')
             dropdown_json = readJsonFile(dropdown_file)
             dropdown_json["shipped"] = True
             dropdown_json["default"] = True
         return dropdown_json
     elif request.method == 'POST':
-        logger.info(f'Saving Dropdown file {profile_dropdown_file}')
         writeJsonFile(request.json, profile_dropdown_file)
         return request.json
     else:
@@ -770,6 +762,17 @@ def configSections():
     if request.method == 'GET':
         config_sections = {"sections": readConfigFileSections()}
         logger.info('Config Sections {0!s:s}'.format(config_sections))
+        return config_sections
+    else:
+        return 'Unknown Method', 500
+
+@bp.route('config/section_regions', methods=(['GET']))
+def configSectionRegions():
+    if request.method == 'GET':
+        config_sections = {"sections": readConfigFileSections(), "regions": {}}
+        for section in config_sections["sections"]:
+            config_sections["regions"][section] = getConfigFileValue(section, 'region')
+        logger.info('Config Regions Sections {0!s:s}'.format(config_sections))
         return config_sections
     else:
         return 'Unknown Method', 500
@@ -849,5 +852,5 @@ def loadfromgit():
             return json.dumps(result)
         except Exception as e:
             logger.exception(e)
-            return str(e), 500
+            return 'Failed to load from Git', 500
 

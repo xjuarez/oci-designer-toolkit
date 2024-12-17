@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -25,7 +25,7 @@ logger = getLogger()
 
 class OCIConnection(object):
     PAGINATION_LIMIT = 1000
-    OKIT_VERSION = 'v0.61.0'
+    OKIT_VERSION = 'v0.66.1'
 
     def __init__(self, config=None, configfile=None, profile=None, region=None, signer=None):
         self.tenancy_ocid = ''
@@ -38,7 +38,7 @@ class OCIConnection(object):
         if (self.config is not None and self.region is not None):
             self.config['region'] = region
         # Create Instance Security Signer
-        logger.info('OCI_CLI_AUTH = ' + os.getenv('OCI_CLI_AUTH', 'Undefined'))
+        # logger.info('OCI_CLI_AUTH = ' + os.getenv('OCI_CLI_AUTH', 'Undefined'))
         if signer is None:
             if os.getenv('OCI_CLI_AUTH', 'config') == 'instance_principal':
                 self.signerFromInstancePrincipal()
@@ -108,7 +108,6 @@ class OCIConnection(object):
                     self.region = os.getenv('OKIT_VM_REGION', 'uk-london-1')
             # Get Signer from From Cert
             cert_path = oci.config.get_config_value_or_default(self.config, "cert-bundle")
-            logger.info(f'Cert Path {cert_path}')
             self.signerFromConfig()
             self.instance_principal = False
         except Exception as e:

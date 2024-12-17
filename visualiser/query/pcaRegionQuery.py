@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -54,7 +54,6 @@ class PCARegionQuery(OCIConnection):
         self.parents = {}
 
     def connect(self):
-        logger.info(f'<<< PCARegionQuery Connecting PCA Clients >>> {self.cert_bundle}')
         self.clients = {
             "identity": oci.identity.IdentityClient(config=self.config, signer=self.signer)
         }
@@ -72,7 +71,6 @@ class PCARegionQuery(OCIConnection):
             cert_bundle = self.config["cert-bundle"]
         else:
             cert_bundle = None
-        logger.info(f'cert_bundle={cert_bundle}')
         response_json = {}
         regions = self.regions()
         logger.info('>>>>> PCA Regions ' + jsonToFormattedString(regions))
@@ -86,6 +84,8 @@ class PCARegionQuery(OCIConnection):
             # region["name"] = region["region_name"]
             # region["key"] = region["region_key"]
         logger.info('>>>>> PCA Regions ' + jsonToFormattedString(regions))
+        if len([r for r in regions if r['id'] == self.config['region']]) > 0:
+            logger.info(f'>>>>> PCA Regions Found Config Region {self.config}')
         return regions
 
     def regions(self):

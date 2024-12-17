@@ -1,10 +1,10 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
 import { OcdUtils } from "@ocd/core"
-import { OcdResources } from "../OcdDesign"
+import { OcdResources } from "../OcdDesign.js"
 
 export interface OcdValidationResult {
     valid: boolean
@@ -30,8 +30,9 @@ export namespace OcdResourceValidator {
         // If not conditional then we will always display
         if (!conditional) return true
         // Check condition
-        const element = condition.element ? condition.element.indexOf('_') ? OcdUtils.toCamelCase(condition.element)  : condition.element : ''
-        const display = OcdUtils.isCondition(resource[element], condition.operator, condition.value)
+        const element = condition.element?.indexOf('_') ? OcdUtils.toCamelCase(condition.element)  : condition.element
+        const leftValue = element ? resource[element] : ''
+        const display = OcdUtils.isCondition(leftValue, condition.operator, condition.value)
         return display
     }
     export function noDefaultValidation(displayName: string, key: string, value: string | boolean | number, title: string, cssClass: string, resources: OcdResources, message: string | undefined = undefined): OcdValidationResult {

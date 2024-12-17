@@ -1,13 +1,12 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
 import { common, containerengine, core, database, datascience, limits, loadbalancer, mysql } from "oci-sdk"
-import { OciQuery } from "./OciQuery"
 import { OciResource } from "@ocd/model"
 import { OcdUtils } from "@ocd/core"
-import { OciCommonQuery } from './OciQueryCommon'
+import { OciCommonQuery } from './OciQueryCommon.js'
 
 export class OciReferenceDataQuery extends OciCommonQuery {
     // Clients
@@ -710,4 +709,4 @@ export class OciReferenceDataQuery extends OciCommonQuery {
 }
 
 export default OciReferenceDataQuery
-module.exports = { OciReferenceDataQuery }
+// module.exports = { OciReferenceDataQuery }

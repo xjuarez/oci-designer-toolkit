@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 // TODO: Remove Following
@@ -9,7 +9,7 @@ import fs from 'fs'
 import path from 'path'
 import { OciReferenceDataQuery } from "@ocd/query"
 import { parseArgs } from "node:util"
-import { OcdReferenceDataGenerator } from "./generator/OcdReferenceDataGenerator"
+import { OcdReferenceDataGenerator } from "./generator/OcdReferenceDataGenerator.js"
 
 const options = {
     schema: {

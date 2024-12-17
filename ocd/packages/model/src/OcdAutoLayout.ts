@@ -1,18 +1,19 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
 import { v4 as uuidv4 } from 'uuid'
-import { OcdDesign, OcdViewCoords, OcdResources, OciResources, OcdViewPage, OcdViewLayer } from './OcdDesign'
-import { OcdResource } from './OcdResource'
-import { OciResource } from './provider/oci/OciResource'
 import { OcdUtils } from '@ocd/core'
-import { OciCompartment } from './provider/oci/resources/OciCompartment'
-import { OcdTwoColumnLayoutEngine } from './layout/OcdTwoColumnLayoutEngine'
-import { OcdSingleColumnLayoutEngine } from './layout/OcdSingleColumnLayoutEngine'
-import { OcdDynamicLayoutEngine } from './layout/OcdDynamicLayoutEngine'
-import { layoutEngineConfig } from './layout/OcdLayoutEngineConfig'
+import { OcdDesign, OcdViewCoords, OcdResources, OciResources, OcdViewPage, OcdViewLayer } from './OcdDesign.js'
+import { OcdResource } from './OcdResource.js'
+import { OciResource } from './provider/oci/OciResource.js'
+import { OciCompartment } from './provider/oci/resources/OciCompartment.js'
+import { OcdTwoColumnLayoutEngine } from './layout/OcdTwoColumnLayoutEngine.js'
+import { OcdSingleColumnLayoutEngine } from './layout/OcdSingleColumnLayoutEngine.js'
+import { OcdDynamicLayoutEngine } from './layout/OcdDynamicLayoutEngine.js'
+import { layoutEngineConfig } from './layout/OcdLayoutEngineConfig.js'
+import { OcdOkitWebLayoutEngine } from './layout/OcdOkitWebLayoutEngine.js'
 
 export class OcdAutoLayout {
     coords: OcdViewCoords[]
@@ -96,16 +97,21 @@ export class OcdAutoLayout {
 
     layout(detailed: boolean = true, style: string = 'dynamic-columns'): OcdViewCoords[] {
         if (style === 'dynamic-columns') {
-            const layoutEngine = new OcdDynamicLayoutEngine(this.coords)
+            const layoutEngine = new OcdDynamicLayoutEngine(this.coords, this.design)
             return layoutEngine.layout(detailed, this.coords)
         } else if (style === 'two-column') {
-            const layoutEngine = new OcdTwoColumnLayoutEngine(this.coords)
+            const layoutEngine = new OcdTwoColumnLayoutEngine(this.coords, this.design)
+            return layoutEngine.layout(detailed, this.coords)
+        } else if (style === 'single-column') {
+            const layoutEngine = new OcdSingleColumnLayoutEngine(this.coords, this.design)
+            return layoutEngine.layout(detailed, this.coords)
+        } else if (style === 'okit-web') {
+            const layoutEngine = new OcdOkitWebLayoutEngine(this.coords, this.design)
             return layoutEngine.layout(detailed, this.coords)
         } else {
-            const layoutEngine = new OcdSingleColumnLayoutEngine(this.coords)
+            const layoutEngine = new OcdDynamicLayoutEngine(this.coords, this.design)
             return layoutEngine.layout(detailed, this.coords)
         }
-        return this.coords
     }
     layoutV2(detailed: boolean = true, style: string = 'two-column'): OcdViewCoords[] {
         // Position Children in Container

@@ -3,7 +3,7 @@
 ** Licensed under the GNU GENERAL PUBLIC LICENSE v 3.0 as shown at https://www.gnu.org/licenses/.
 */
 
-import { resourceMap } from './OcdResourceMap'
+import { resourceMap } from './OcdResourceMap.js'
 
 export namespace OcdUtils {
     export interface ResourcePropertyCondition {
@@ -20,6 +20,7 @@ export namespace OcdUtils {
         b: number
         a: number
     }
+    export const simpleSort = (a: string, b: string) => a.localeCompare(b)
     export function toTitle(str: string): string {
         let key = str as keyof typeof resourceMap
         return Object.hasOwn(resourceMap, key) ? resourceMap[key].title : OcdUtils.toTitleCase(str.split('_').join(' '))
@@ -57,8 +58,8 @@ export namespace OcdUtils {
     export function isCondition(leftHandSide: string | number | boolean | Array<any> | Function | undefined, operator: string | undefined, rightHandSide: string | number | boolean | Array<any> | Function | undefined): boolean {
         let isTrue = false
         // console.debug('OcdUtils: isConditional', leftHandSide, operator, rightHandSide)
-        if (operator === 'eq') isTrue = (leftHandSide === rightHandSide)
-        else if (operator === 'ne') isTrue = (leftHandSide !== rightHandSide)
+        if (operator === 'eq')      isTrue = (leftHandSide !== undefined && rightHandSide !== undefined && leftHandSide === rightHandSide)
+        else if (operator === 'ne') isTrue = (leftHandSide !== undefined && rightHandSide !== undefined && leftHandSide !== rightHandSide)
         else if (operator === 'lt') isTrue = (leftHandSide !== undefined && rightHandSide !== undefined && leftHandSide < rightHandSide)
         else if (operator === 'gt') isTrue = (leftHandSide !== undefined && rightHandSide !== undefined && leftHandSide > rightHandSide)
         else if (operator === 'le') isTrue = (leftHandSide !== undefined && rightHandSide !== undefined && leftHandSide <= rightHandSide)

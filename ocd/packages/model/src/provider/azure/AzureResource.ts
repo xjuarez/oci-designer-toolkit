@@ -1,14 +1,14 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
 
 import { v4 as uuidv4 } from 'uuid'
 import { OcdUtils } from '@ocd/core'
-import { OcdResource } from "../../OcdResource"
-import * as Resources from './resources'
-import { OcdResources } from '../../OcdDesign'
+import { OcdResource } from "../../OcdResource.js"
+import * as Resources from './resources.js'
+import { OcdResources } from '../../OcdDesign.js'
 
 export interface AzureResource extends OcdResource {
     location: string

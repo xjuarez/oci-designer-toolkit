@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -144,7 +144,7 @@ class PCADropdownQuery(OCIConnection):
         self.getTenancy()
 
     def connect(self):
-        logger.info(f'<<< PCADropdownQuery Connecting PCA Clients >>> {self.cert_bundle}')
+        logger.info(f'<<< PCADropdownQuery Connecting PCA Clients >>> ')
         self.clients = {
             "volume": oci.core.BlockstorageClient(config=self.config, signer=self.signer),
             "compute": oci.core.ComputeClient(config=self.config, signer=self.signer),
@@ -172,7 +172,6 @@ class PCADropdownQuery(OCIConnection):
             cert_bundle = self.config["cert-bundle"]
         else:
             cert_bundle = None
-        logger.info(f'cert_bundle={cert_bundle}')
         include_sub_compartments = True
         response_json = {}
         # Get All Compartments

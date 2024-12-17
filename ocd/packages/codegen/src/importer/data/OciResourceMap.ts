@@ -1,9 +1,9 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
-import { OcdIncludedElements, OcdResourceMap } from "../../types/OcdImporterData";
+import { OcdIncludedElements, OcdResourceMap } from "../../types/OcdImporterData.js";
 
 export const resourceMap: OcdResourceMap = {
     "oci_analytics_analytics_instance": "analytics_instance",
@@ -238,6 +238,7 @@ export const resourceAttributes: OcdIncludedElements = {
         "display_name",
     ],
     "oci_core_drg_attachment": [
+        "id",
         "display_name",
         "drg_id",
         "drg_route_table_id",
@@ -655,9 +656,6 @@ export const resourceAttributes: OcdIncludedElements = {
         "is_primary",
         "management_endpoint",
         "protection_mode",
-        "replica_details",
-        "restore_trigger",
-        "restored_from_key_id",
         "vault_id",
         "key_shape",
         "key_shape.algorithm",
@@ -732,7 +730,6 @@ export const resourceAttributes: OcdIncludedElements = {
         "description",
         "display_name",
         "fault_domain",
-        "heat_wave_cluster",
         "hostname_label",
         "ip_address",
         "is_heat_wave_cluster_attached",

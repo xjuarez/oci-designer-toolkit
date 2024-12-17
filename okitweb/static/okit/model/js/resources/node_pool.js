@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 console.debug('Loaded Node Pool Javascript');
@@ -48,7 +48,15 @@ class NodePool extends OkitArtifact {
         Object.defineProperty(this, 'node_pool_type', {get: function() {return this.getOkitJson().getResource(this.cluster_id).node_pool_type;}});
         Object.defineProperty(this, 'virtual_nodes', {get: function() {return this.node_pool_type === 'Virtual'}});
     }
-
+    /*
+    ** Conversion Routine allowing loading of old json
+     */
+    convert() {
+        super.convert();
+        this.node_config_details.placement_configs.forEach((p) => p.availability_domain = String(p.availability_domain).slice(-1))
+        if (this.nodes) delete this.nodes
+    }
+    
     isVirtualNodes = () => this.getOkitJson().getResource(this.cluster_id) && this.getOkitJson().getResource(this.cluster_id).node_pool_type === 'Virtual'
     setDefaultShape = () => this.node_shape = this.isVirtualNodes() ? 'Pod.Standard.E3.Flex' : 'VM.Standard.E3.Flex'
 

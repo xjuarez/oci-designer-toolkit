@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -202,11 +202,6 @@ class OCIQuery(OCIConnection):
         logger.info('Request : {0!s:s}'.format(str(include_sub_compartments)))
         if self.instance_principal:
             self.config['tenancy'] = self.getTenancy()
-        # if "cert-bundle" in self.config:
-        #     cert_bundle = self.config["cert-bundle"]
-        # else:
-        #     cert_bundle = None
-        logger.info(f'cert_bundle={self.cert_bundle}')
 
         discovery_client = OciResourceDiscoveryClient(self.config, signer=self.signer, cert_bundle=self.cert_bundle, regions=regions, include_resource_types=self.SUPPORTED_RESOURCES, compartments=compartments, include_sub_compartments=include_sub_compartments)
         # Get Supported Resources
@@ -284,7 +279,7 @@ class OCIQuery(OCIConnection):
                     elif resource_type == "NetworkSecurityGroup":
                         resource_list = self.network_security_group(resource_list, resources)
                     elif resource_type == "NodePool":
-                        logger.info(f'Node Pools {jsonToFormattedString(resource_list)}')
+                        resource_list = self.node_pools(resource_list)
                     elif resource_type == "NoSQLTable":
                         resource_list = self.nosql_databases(resource_list, resources)
                     elif resource_type == "RouteTable":
@@ -494,6 +489,11 @@ class OCIQuery(OCIConnection):
         for database in databases:
             database['indexes'] = [i for i in indexes if i['table_id'] == database['id']]
         return databases
+
+    def node_pools(self, node_pools):
+        for node_pool in node_pools:
+            node_pool.pop('nodes', None)
+        return node_pools
 
     def object_storage_buckets(self, buckets, resources):
         for bucket in buckets:

@@ -1,12 +1,12 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
 import { OcdUtils } from "@ocd/core"
-import { OcdDesign } from "./OcdDesign"
-import { OcdValidationResult } from "./validator/OcdResourceValidator"
-import * as ociResourceValidators from "./validator/provider/oci/resources"
+import { OcdDesign } from "./OcdDesign.js"
+import { OcdValidationResult } from "./validator/OcdResourceValidator.js"
+import * as ociResourceValidators from "./validator/provider/oci/resources.js"
 
 export namespace OcdValidator {
     export function validate(design: OcdDesign): OcdValidationResult[] {

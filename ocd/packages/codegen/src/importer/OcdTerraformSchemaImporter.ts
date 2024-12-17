@@ -1,13 +1,13 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
 import { OcdUtils } from "@ocd/core";
-import { OcdConditionalElements, OcdElementOverrides, OcdIgnoreElements, OcdIncludedElements } from "../types/OcdImporterData";
-import { OcdSchemaEntry } from "../types/OcdSchema";
-import { TerrafomSchemaEntry, TerraformSchema, TerraformSchemaDataMap, TerraformSchemaResourceMap } from "../types/TerraformSchema";
-import { OcdSchemaImporter } from "./OcdSchemaImporter";
+import { OcdConditionalElements, OcdElementOverrides, OcdIgnoreElements, OcdIncludedElements } from "../types/OcdImporterData.js";
+import { OcdSchemaEntry } from "../types/OcdSchema.js";
+import { TerrafomSchemaEntry, TerraformSchema, TerraformSchemaDataMap, TerraformSchemaResourceMap } from "../types/TerraformSchema.js";
+import { OcdSchemaImporter } from "./OcdSchemaImporter.js";
 
 export class OcdTerraformSchemaImporter extends OcdSchemaImporter {
     tfProvider: string = ''
@@ -72,6 +72,7 @@ export class OcdTerraformSchemaImporter extends OcdSchemaImporter {
         const defaults = {...this.elementOverrides.defaults.common, ...this.elementOverrides.defaults[key] !== undefined ? this.elementOverrides.defaults[key] : {}}
         const labels = {...this.elementOverrides.labels.common, ...this.elementOverrides.labels[key] !== undefined ? this.elementOverrides.labels[key] : {}}
         const lookupOverrides = {...this.elementOverrides.lookupOverrides.common, ...this.elementOverrides.lookupOverrides[key] !== undefined ? this.elementOverrides.lookupOverrides[key] : {}}
+        // console.debug('OcdTerraformSchemaImporter: Resource', key, includeAttributes)
         // console.debug('OcdTerraformSchemaImporter: Resource', key, type_overrides)
         // Simple attributes
         // @ts-ignore

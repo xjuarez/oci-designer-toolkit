@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -267,7 +267,6 @@ class PCAQuery(OCIConnection):
         self.sub_compartments = False
 
     def connect(self):
-        logger.info(f'<<< Connecting PCA Clients >>> {self.cert_bundle}')
         self.clients = {
             "volume": oci.core.BlockstorageClient(config=self.config, signer=self.signer),
             "compute": oci.core.ComputeClient(config=self.config, signer=self.signer),
@@ -300,7 +299,6 @@ class PCAQuery(OCIConnection):
             cert_bundle = self.config["cert-bundle"]
         else:
             cert_bundle = None
-        logger.info(f'cert_bundle={cert_bundle}')
         self.sub_compartments = include_sub_compartments
         self.query_compartments = compartments
         self.top_level_compartments = compartments
@@ -775,14 +773,15 @@ class PCAQuery(OCIConnection):
             resources = self.toJson(results)
             self.dropdown_json[array].extend(resources)
         known_instances = [instance['id'] for instance in self.dropdown_json['instances']]
-        for load_balancer in self.dropdown_json[array]:
+        for nlb in self.dropdown_json[array]:
+            nlb["listeners"] = list(nlb["listeners"].values())
             private_ips = []
-            for subnet_id in load_balancer['subnet_ids']:
+            for subnet_id in nlb['subnet_ids']:
                 private_ips.extend(self.private_ips(subnet_id))
             for subnet in self.dropdown_json['subnets']:
                 private_ips.extend(self.private_ips(subnet['id']))
-            for backend_set in load_balancer['backend_sets']:
-                for backend in load_balancer['backend_sets'][backend_set]['backends']:
+            for backend_set in nlb['backend_sets']:
+                for backend in nlb['backend_sets'][backend_set]['backends']:
                     for ip_address in [ip for ip in private_ips if ip['ip_address'] == backend['ip_address']]:
                         for vnic_attachment in [va for va in self.ancillary_resources['vnic_attachments'] if va['vnic_id'] == ip_address['vnic_id']]:
                             if vnic_attachment['instance_id'] in known_instances:
@@ -849,8 +848,8 @@ class PCAQuery(OCIConnection):
                          'nat':'nat_gateway',
                          'localpeeringgateway': 'local_peering_gateway',
                          'dynamicroutinggateway': 'dynamic_routing_gateway',
-                         'drg': 'drg_attachment',
-                        #  'drg': 'dynamic_routing_gateway',
+                        #  'drg': 'drg_attachment',
+                         'drg': 'dynamic_routing_gateway', # Reverted DRG
                          'privateip':'private_ip',
                          'servicegateway': 'service_gateway',
                          'vcn': 'vcn'}

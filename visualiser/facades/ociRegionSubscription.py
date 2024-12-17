@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 """Provide Module Description
@@ -40,6 +40,17 @@ class OCIRegionSubscriptions(OCIIdentityConnection):
         # logger.info(regions)
         # Convert to Json object
         self.regions_json = self.toJson(regions)
+        for region in self.regions_json:
+            # logger.info(jsonToFormattedString(region))
+            region["id"] = region["region_name"]
+            region["name"] = region["region_name"]
+            region["key"] = region["region_key"]
+            if region["name"] == region["key"]:
+                # PCA-X9
+                region['display_name'] = region["name"]
+            else:
+                name_parts = region['name'].split('-')
+                region['display_name'] = '{0!s:s} {1!s:s}'.format(name_parts[0].upper(), name_parts[1].capitalize())
         # logger.info(str(self.regions_json))
 
         return sorted(self.regions_json, key=lambda k: k['region_name'], reverse=True)

@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 console.debug('Loaded Network Load Balancer View Javascript');
@@ -22,6 +22,7 @@ class NetworkLoadBalancerView extends OkitCompartmentArtefactView {
     */
     // Draw Connections
     drawConnections() {
+        if (!this.artefact.backend_sets) this.artefact.backend_sets = []
         this.artefact.backend_sets.forEach((backend_set) => {
             backend_set.backends.forEach((backend) => {if (backend.target_id) this.drawConnection(this.id, backend.target_id)})
         })

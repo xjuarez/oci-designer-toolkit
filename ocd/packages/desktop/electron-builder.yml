@@ -1,3 +1,0 @@
-extraMetadata:
-  version: 0.1.0-alpha
-  artifactName: ${name}-${version}-${os}-${arch}.${ext}

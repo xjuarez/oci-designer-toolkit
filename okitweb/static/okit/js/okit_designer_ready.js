@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 console.debug('Loaded Compartment Ready Javascript');
@@ -20,8 +20,13 @@ const initialiseGlobals = () => {
     okitSessionOciConfigs = new OkitSessionOCIConfigs();
     okitSettings = new OkitSettings();
     okitOciConfig = new OkitOCIConfig(loadHeaderConfigDropDown);
-    okitRegions = new OkitRegions(loadHeaderRegionsDropDown);
-    okitOciData = new OkitOCIData(okitSettings.profile, okitSettings.region);
+    if (pca_mode || c3_mode) {
+        okitRegions = new OkitPCARegions(loadHeaderRegionsDropDown);
+        okitOciData = new OkitPCAData(okitSettings.profile, okitSettings.region);
+    } else {
+        okitRegions = new OkitRegions(loadHeaderRegionsDropDown);
+        okitOciData = new OkitOCIData(okitSettings.profile, okitSettings.region);
+    }
     okitGitConfig = new OkitGITConfig();
     okitOciProductPricing = new OkitOciProductPricing()
 

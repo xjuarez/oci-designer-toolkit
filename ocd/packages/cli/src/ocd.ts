@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+** Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
@@ -9,12 +9,12 @@
 
 import fs from 'fs'
 import path from 'path'
+//@ts-ignore
 import { parseArgs } from "node:util"
 import { OcdMarkdownExporter, OcdSVGExporter, OcdTerraformExporter } from '@ocd/export'
 import { OciQuery } from "@ocd/query"
-import { OcdAutoLayout, OcdDesign, OcdViewCoords } from '@ocd/model'
+import { OcdAutoLayout, OcdDesign, OcdViewCoords, OciModelResources } from '@ocd/model'
 import { OcdUtils } from '@ocd/core'
-import { OciModelResources } from '@ocd/model'
 
 const options = {
     compartments: {
